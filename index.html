@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet" href="calculator.css">
+
+    <title>Daggerheart Character creator!</title>
+</head>
+
+<body>
+    <main class="container" style="margin-top: 5%">
+        <h1>Daggerheart Character builder</h1> <a data-tooltip="James' Github repo for this project"
+            href="https://github.com/Gensokian/dh-char-saver">Github repo</a> - <a
+            data-tooltip="Direct contact to James" href="https://discord.com/users/216647648801718272">Discord
+            contact</a>
+        <hr>
+        <article class="container-fluid">
+            <div class="grid">
+                <div>
+                    Add character image:
+                    <img id="previewImage" style="max-width: 200px; display: none;" alt="Character preview">
+                    <input type="file" id="characterImage" accept="image/*" onchange="loadImage(event)">
+                </div>
+                <div>
+                    Description
+                    <textarea id="characterDescription" placeholder="Enter character description..."></textarea>
+                </div>
+            </div>
+        </article>
+        <article>
+            <h2>Character Details</h2>
+            <div class="grid">
+                <div>
+                    <label for="characterName">Character Name:</label>
+                    <input type="text" id="characterName" placeholder="Enter character name">
+                </div>
+                <div>
+                    <label for="characterClass">Character Class:</label>
+                    <select id="characterClass">
+                        <option value="">Select a class</option>
+                        <option value="warrior">Warrior</option>
+                        <option value="wizard">Wizard</option>
+                        <option value="guardian">Guardian</option>
+                        <option value="rogue">Rogue</option>
+                        <option value="ranger">Ranger</option>
+                        <option value="sorcerer">Sorcerer</option>
+                        <option value="bard">Bard</option>
+                        <option value="seraph">Seraph</option>
+                        <option value="druid">Druid</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="characterSubClass">Character Sublass:</label>
+                    <input type="text" id="characterSubClass" placeholder="Enter subclass">
+                    
+
+                </div>
+                <div>
+                    <label for="characterLevel">Character Level:</label>
+                    <input type="number" id="characterLevel" min="1" max="10" placeholder="Enter level">
+                </div>
+            </div>
+            <div class="grid">
+                <div>
+                    <label for="strength">Strength:</label>
+                    <input type="number" id="strength" min="-1" max="10" value="0">
+                </div>
+                <div>
+                    <label for="agility">Agility:</label>
+                    <input type="number" id="agility" min="-1" max="10" value="0">
+                </div>
+                <div>
+                    <label for="finesse">Finesse:</label>
+                    <input type="number" id="finesse" min="-1" max="10" value="0">
+
+                </div>
+                <div>
+                    <label for="instinct">Instinct:</label>
+                    <input type="number" id="instinct" min="-1" max="10" value="0">
+                </div>
+                <div>
+                    <label for="knowledge">Knowledge:</label>
+                    <input type="number" id="knowledge" min="-1" max="10" value="0">
+                </div>
+            </div>
+
+        </article>
+        <article>
+
+            <button onclick="saveCharacter()">Save Character</button>
+        </article>
+    </main>
+    <script>
+        function loadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.getElementById('previewImage');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
