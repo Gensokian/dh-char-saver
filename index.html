@@ -8,18 +8,21 @@
     <link rel="icon" type="image/png" href="images/favicon.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
-    <link rel="stylesheet" href="calculator.css">
+    <link rel="stylesheet" href="charcreator.css">
 
     <title>Daggerheart Character creator!</title>
 </head>
 
 <body>
     <main class="container" style="margin-top: 5%">
-        <h1>Daggerheart Character builder</h1> <a data-tooltip="James' Github repo for this project"
-            href="https://github.com/Gensokian/dh-char-saver">Github repo</a> - <a
-            data-tooltip="Direct contact to James" href="https://discord.com/users/216647648801718272">Discord
-            contact</a>
-        <hr>
+        <article>
+            <h1>Daggerheart Character builder</h1>
+            <hr>
+            <a data-tooltip="James' Github repo for this project"
+                href="https://github.com/Gensokian/dh-char-saver">Github repo</a> - <a
+                data-tooltip="Direct contact to James" href="https://discord.com/users/216647648801718272">Discord
+                contact</a>
+        </article>
         <article class="container-fluid">
             <div class="grid">
                 <div>
@@ -42,24 +45,22 @@
                 </div>
                 <div>
                     <label for="characterClass">Character Class:</label>
-                    <select id="characterClass">
-                        <option value="">Select a class</option>
-                        <option value="warrior">Warrior</option>
-                        <option value="wizard">Wizard</option>
-                        <option value="guardian">Guardian</option>
-                        <option value="rogue">Rogue</option>
-                        <option value="ranger">Ranger</option>
-                        <option value="sorcerer">Sorcerer</option>
-                        <option value="bard">Bard</option>
+                    <select id="characterClass" onchange="classChanged()">
+                        <option value="" disabled>Select a class</option>
+                        <option value="warrior">Warrior - Blade + Bone</option>
+                        <option value="wizard">Wizard - Codex + Splendor</option>
+                        <option value="guardian">Guardian - Valor + Blade</option>
+                        <option value="rogue">Rogue - Grace + Midnight</option>
+                        <option value="ranger">Ranger - Bone + Sage</option>
+                        <option value="sorcerer">Sorcerer - Arcana + Midnight</option>
+                        <option value="bard">Bard - Codex + Grace</option>
                         <option value="seraph">Seraph</option>
-                        <option value="druid">Druid</option>
+                        <option value="druid">Druid - Arcana + Sage</option>
                     </select>
                 </div>
                 <div>
-                    <label for="characterSubClass">Character Sublass:</label>
+                    <label for="characterSubClass">Character Subclass:</label>
                     <input type="text" id="characterSubClass" placeholder="Enter subclass">
-                    
-
                 </div>
                 <div>
                     <label for="characterLevel">Character Level:</label>
@@ -78,7 +79,6 @@
                 <div>
                     <label for="finesse">Finesse:</label>
                     <input type="number" id="finesse" min="-1" max="10" value="0">
-
                 </div>
                 <div>
                     <label for="instinct">Instinct:</label>
@@ -91,9 +91,336 @@
             </div>
 
         </article>
-        <article>
 
-            <button onclick="saveCharacter()">Save Character</button>
+
+        <!-- INVENTORY N STUFF-->
+
+
+        <article>
+            <div class="container">
+                <h1>Equipables</h1>
+                <div class="grid">
+                    <div>
+                        <h2>Primary Weapon</h2>
+                        <div>
+                            <input type="text" id="primaryWeaponName" placeholder="Enter weapon name">
+                        </div>
+                        <div>
+                            <select id="primaryWeaponTrait">
+                                <option value="strength">Strength</option>
+                                <option value="agility">Agility</option>
+                                <option value="finesse">Finesse</option>
+                                <option value="instinct">Instinct</option>
+                                <option value="knowledge">Knowledge</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="primaryWeaponRange">
+                                <option value="melee">Melee</option>
+                                <option value="veryClose">Very Close</option>
+                                <option value="close">Close</option>
+                                <option value="far">Far</option>
+                                <option value="beyond">Beyond Far</option>
+                            </select>
+                        </div>
+                        <div>
+                            <fieldset role="group">
+                                <legend>Damage Dice</legend>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" checked />
+                                    d4
+                                </label>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" />
+                                    d6
+                                </label>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" />
+                                    d8
+                                </label>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" />
+                                    d10
+                                </label>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" />
+                                    d12
+                                </label>
+                                <label>
+                                    <input type="radio" name="primaryWeaponDamageDice" />
+                                    d20
+                                </label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label for="primaryWeaponDamage">Damage Modifier</label>
+                            <input type="text" id="primaryWeaponDamage" placeholder="modifier">
+                        </div>
+                        <div>
+                            <label for="primaryWeaponFeature">Feature</label>
+                            <input type="text" id="primaryWeaponFeature" placeholder="Feature">
+                        </div>
+                    </div>
+                    <div>
+                        <h2>Secondary Weapon</h2>
+                        <div>
+                            <input type="text" id="secondaryWeaponName" placeholder="Enter weapon name">
+                        </div>
+                        <div>
+                            <select id="secondaryWeaponTrait">
+                                <option value="strength">Strength</option>
+                                <option value="agility">Agility</option>
+                                <option value="finesse">Finesse</option>
+                                <option value="instinct">Instinct</option>
+                                <option value="knowledge">Knowledge</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="secondaryWeaponRange">
+                                <option value="melee">Melee</option>
+                                <option value="veryClose">Very Close</option>
+                                <option value="close">Close</option>
+                                <option value="far">Far</option>
+                                <option value="beyond">Beyond Far</option>
+                            </select>
+                        </div>
+                        <div>
+                            <fieldset role="group">
+                                <legend>Damage Dice</legend>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" checked />
+                                    d4
+                                </label>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" />
+                                    d6
+                                </label>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" />
+                                    d8
+                                </label>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" />
+                                    d10
+                                </label>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" />
+                                    d12
+                                </label>
+                                <label>
+                                    <input type="radio" name="secondaryWeaponDamageDice" />
+                                    d20
+                                </label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label for="secondaryWeaponDamage">Damage Modifier</label>
+                            <input type="text" id="secondaryWeaponDamage" placeholder="modifier">
+                        </div>
+                        <div>
+                            <label for="secondaryWeaponFeature">Feature</label>
+                            <input type="text" id="secondaryWeaponFeature" placeholder="Feature">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="grid">
+                    <div>
+                        <h2>Inventory Weapon 1</h2>
+                        <div>
+                            <input type="text" id="inventory1WeaponName" placeholder="Enter weapon name">
+                        </div>
+                        <div>
+                            <select id="inventory1WeaponTrait">
+                                <option value="strength">Strength</option>
+                                <option value="agility">Agility</option>
+                                <option value="finesse">Finesse</option>
+                                <option value="instinct">Instinct</option>
+                                <option value="knowledge">Knowledge</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="inventory1WeaponRange">
+                                <option value="melee">Melee</option>
+                                <option value="veryClose">Very Close</option>
+                                <option value="close">Close</option>
+                                <option value="far">Far</option>
+                                <option value="beyond">Beyond Far</option>
+                            </select>
+                        </div>
+                        <div>
+                            <fieldset role="group">
+                                <legend>Damage Dice</legend>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" checked />
+                                    d4
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" />
+                                    d6
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" />
+                                    d8
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" />
+                                    d10
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" />
+                                    d12
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory1WeaponDamageDice" />
+                                    d20
+                                </label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label for="inventory1WeaponDamage">Damage Modifier</label>
+                            <input type="text" id="inventory1WeaponDamage" placeholder="modifier">
+                        </div>
+                        <div>
+                            <label for="inventory1WeaponFeature">Feature</label>
+                            <input type="text" id="inventory1WeaponFeature" placeholder="Feature">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2>Inventory Weapon 2</h2>
+                        <div>
+                            <input type="text" id="inventory2WeaponName" placeholder="Enter weapon name">
+                        </div>
+                        <div>
+                            <select id="inventory2WeaponTrait">
+                                <option value="strength">Strength</option>
+                                <option value="agility">Agility</option>
+                                <option value="finesse">Finesse</option>
+                                <option value="instinct">Instinct</option>
+                                <option value="knowledge">Knowledge</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="inventory2WeaponRange">
+                                <option value="melee">Melee</option>
+                                <option value="veryClose">Very Close</option>
+                                <option value="close">Close</option>
+                                <option value="far">Far</option>
+                                <option value="beyond">Beyond Far</option>
+                            </select>
+                        </div>
+                        <div>
+                            <fieldset role="group">
+                                <legend>Damage Dice</legend>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" checked />
+                                    d4
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" />
+                                    d6
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" />
+                                    d8
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" />
+                                    d10
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" />
+                                    d12
+                                </label>
+                                <label>
+                                    <input type="radio" name="inventory2WeaponDamageDice" />
+                                    d20
+                                </label>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label for="inventory2WeaponDamage">Damage Modifier</label>
+                            <input type="text" id="inventory2WeaponDamage" placeholder="modifier">
+                        </div>
+                        <div>
+                            <label for="inventory2WeaponFeature">Feature</label>
+                            <input type="text" id="inventory2WeaponFeature" placeholder="Feature">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ARMOR -->
+
+                <div>
+                    <h2>Armor</h2>
+                    <div class="grid">
+                        <div>
+                            <input type="text" id="armorName" placeholder="Enter armor name">
+                        </div>
+                        <div>
+                            <input type="number" id="armorSlots" placeholder="Enter armorslots">
+                        </div>
+
+                    </div>
+                    <div class="grid">
+                        <div>
+                            <input type="number" id="armorMajorThreshold" placeholder="Minor Thrershold">
+                        </div>
+                        <div>
+                            <input type="number" id="armorSevereThreshold" placeholder="Minor Thrershold">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2>Other</h2>
+
+                    <fieldset role="group">
+                        <input type="text" id="item1" placeholder="Item name">
+                        <input type="number" id="item1Count" placeholder="1">
+                        <button class="contrast">X</button>
+                    </fieldset>
+                    <button style="width: 100%;" class="secondary">Add Item</button>
+
+                </div>
+        </article>
+        <article>
+            <h1>Domain cards</h1>
+            <div class="grid">
+                <div class="card">
+                    <b>A long card name without an end in sight</b>
+                    <p>Spend a hope to gain a hope. Fun, right?</p>
+                </div>
+                <div class="card">
+                    <b>Title</b>
+                    <p>Description</p>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <b>Title</b>
+                    <p>Description</p>
+                </div>
+                <div class="card">
+                    <b>Title</b>
+                    <p>Description</p>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <b>Title</b>
+                    <p>Description</p>
+                </div>
+                <div class="card">
+                    <b>Title</b>
+                    <p>Description</p>
+                </div>
+            </div>
+
+        </article>
+        <article>
+            <button style="width: 100%;" onclick="saveCharacter()">Save Character</button>
         </article>
     </main>
     <script>
