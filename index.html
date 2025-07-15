@@ -1,34 +1,32 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
     <link rel="icon" type="image/png" href="images/favicon.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
-    <link rel="stylesheet" href="charcreator.css">
 
     <title>Daggerheart Character creator!</title>
 </head>
-
 <body>
-    <main class="container" style="margin-top: 5%">
+    <main class="container">
         <article>
             <h1>Daggerheart Character builder</h1>
             <hr>
-            <a data-tooltip="James' Github repo for this project"
-                href="https://github.com/Gensokian/dh-char-saver">Github repo</a> - <a
-                data-tooltip="Direct contact to James" href="https://discord.com/users/216647648801718272">Discord
-                contact</a>
+            <a data-tooltip="James' Github repo for this project" href="https://github.com/Gensokian/dh-char-saver">Github repo</a> -
+            <a data-tooltip="Direct contact to James" href="https://discord.com/users/216647648801718272">Discord contact</a>
         </article>
+
         <article class="container-fluid">
+            <button id="loadCharacterButton" style="width: 100%;">Load character</button>
+            <hr>
             <div class="grid">
                 <div>
                     Add character image:
-                    <img id="previewImage" style="max-width: 200px; display: none;" alt="Character preview">
-                    <input type="file" id="characterImage" accept="image/*" onchange="loadImage(event)">
+                    <img id="previewImage" style="max-width: 200px; max-height: 200px; display: none;" alt="Character preview">
+                    <input type="file" id="characterImage" accept="image/*">
                 </div>
                 <div>
                     Description
@@ -36,6 +34,7 @@
                 </div>
             </div>
         </article>
+
         <article>
             <h2>Character Details</h2>
             <div class="grid">
@@ -45,8 +44,8 @@
                 </div>
                 <div>
                     <label for="characterClass">Character Class:</label>
-                    <select id="characterClass" onchange="classChanged()">
-                        <option value="" disabled>Select a class</option>
+                    <select id="characterClass">
+                        <option value="" disabled selected>Select a class</option>
                         <option value="warrior">Warrior - Blade + Bone</option>
                         <option value="wizard">Wizard - Codex + Splendor</option>
                         <option value="guardian">Guardian - Valor + Blade</option>
@@ -64,9 +63,10 @@
                 </div>
                 <div>
                     <label for="characterLevel">Character Level:</label>
-                    <input type="number" id="characterLevel" min="1" max="10" placeholder="Enter level">
+                    <input type="number" id="characterLevel" min="1" max="10" placeholder="Enter level" value="1">
                 </div>
             </div>
+
             <div class="grid">
                 <div>
                     <label for="strength">Strength:</label>
@@ -90,21 +90,45 @@
                 </div>
             </div>
 
+            <div class="grid">
+                <div>
+                    <label for="characterMaxHealth">Max Health:</label>
+                    <input type="number" id="characterMaxHealth" value="6" min="1" max="12" placeholder="6">
+                </div>
+                <div>
+                    <label for="characterMaxStress">Max Stress:</label>
+                    <input type="number" id="characterMaxStress" value="6" min="1" max="12" placeholder="6">
+                </div>
+            </div>
+
+            <div class="grid">
+                <div>
+                    <fieldset role="group">
+                        <legend>Health</legend>
+                        <div id="healthCheckboxesContainer" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                            <!-- Health checkboxes will be dynamically added here -->
+                        </div>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset role="group">
+                        <legend>Stress</legend>
+                        <div id="stressCheckboxesContainer" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                            <!-- Stress checkboxes will be dynamically added here -->
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
         </article>
 
-
         <!-- INVENTORY N STUFF-->
-
-
         <article>
             <div class="container">
                 <h1>Equipables</h1>
                 <div class="grid">
                     <div>
                         <h2>Primary Weapon</h2>
-                        <div>
-                            <input type="text" id="primaryWeaponName" placeholder="Enter weapon name">
-                        </div>
+                        <div><input type="text" id="primaryWeaponName" placeholder="Enter weapon name"></div>
                         <div>
                             <select id="primaryWeaponTrait">
                                 <option value="strength">Strength</option>
@@ -126,30 +150,12 @@
                         <div>
                             <fieldset role="group">
                                 <legend>Damage Dice</legend>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" checked />
-                                    d4
-                                </label>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" />
-                                    d6
-                                </label>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" />
-                                    d8
-                                </label>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" />
-                                    d10
-                                </label>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" />
-                                    d12
-                                </label>
-                                <label>
-                                    <input type="radio" name="primaryWeaponDamageDice" />
-                                    d20
-                                </label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d4" checked /> d4</label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d6" /> d6</label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d8" /> d8</label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d10" /> d10</label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d12" /> d12</label>
+                                <label><input type="radio" name="primaryWeaponDamageDice" value="d20" /> d20</label>
                             </fieldset>
                         </div>
                         <div>
@@ -163,9 +169,7 @@
                     </div>
                     <div>
                         <h2>Secondary Weapon</h2>
-                        <div>
-                            <input type="text" id="secondaryWeaponName" placeholder="Enter weapon name">
-                        </div>
+                        <div><input type="text" id="secondaryWeaponName" placeholder="Enter weapon name"></div>
                         <div>
                             <select id="secondaryWeaponTrait">
                                 <option value="strength">Strength</option>
@@ -187,30 +191,12 @@
                         <div>
                             <fieldset role="group">
                                 <legend>Damage Dice</legend>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" checked />
-                                    d4
-                                </label>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" />
-                                    d6
-                                </label>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" />
-                                    d8
-                                </label>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" />
-                                    d10
-                                </label>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" />
-                                    d12
-                                </label>
-                                <label>
-                                    <input type="radio" name="secondaryWeaponDamageDice" />
-                                    d20
-                                </label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d4" checked /> d4</label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d6" /> d6</label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d8" /> d8</label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d10" /> d10</label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d12" /> d12</label>
+                                <label><input type="radio" name="secondaryWeaponDamageDice" value="d20" /> d20</label>
                             </fieldset>
                         </div>
                         <div>
@@ -225,215 +211,540 @@
                 </div>
 
                 <hr>
-                <div class="grid">
-                    <div>
-                        <h2>Inventory Weapon 1</h2>
-                        <div>
-                            <input type="text" id="inventory1WeaponName" placeholder="Enter weapon name">
-                        </div>
-                        <div>
-                            <select id="inventory1WeaponTrait">
-                                <option value="strength">Strength</option>
-                                <option value="agility">Agility</option>
-                                <option value="finesse">Finesse</option>
-                                <option value="instinct">Instinct</option>
-                                <option value="knowledge">Knowledge</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select id="inventory1WeaponRange">
-                                <option value="melee">Melee</option>
-                                <option value="veryClose">Very Close</option>
-                                <option value="close">Close</option>
-                                <option value="far">Far</option>
-                                <option value="beyond">Beyond Far</option>
-                            </select>
-                        </div>
-                        <div>
-                            <fieldset role="group">
-                                <legend>Damage Dice</legend>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" checked />
-                                    d4
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" />
-                                    d6
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" />
-                                    d8
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" />
-                                    d10
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" />
-                                    d12
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory1WeaponDamageDice" />
-                                    d20
-                                </label>
-                            </fieldset>
-                        </div>
-                        <div>
-                            <label for="inventory1WeaponDamage">Damage Modifier</label>
-                            <input type="text" id="inventory1WeaponDamage" placeholder="modifier">
-                        </div>
-                        <div>
-                            <label for="inventory1WeaponFeature">Feature</label>
-                            <input type="text" id="inventory1WeaponFeature" placeholder="Feature">
-                        </div>
-                    </div>
-
-                    <div>
-                        <h2>Inventory Weapon 2</h2>
-                        <div>
-                            <input type="text" id="inventory2WeaponName" placeholder="Enter weapon name">
-                        </div>
-                        <div>
-                            <select id="inventory2WeaponTrait">
-                                <option value="strength">Strength</option>
-                                <option value="agility">Agility</option>
-                                <option value="finesse">Finesse</option>
-                                <option value="instinct">Instinct</option>
-                                <option value="knowledge">Knowledge</option>
-                            </select>
-                        </div>
-                        <div>
-                            <select id="inventory2WeaponRange">
-                                <option value="melee">Melee</option>
-                                <option value="veryClose">Very Close</option>
-                                <option value="close">Close</option>
-                                <option value="far">Far</option>
-                                <option value="beyond">Beyond Far</option>
-                            </select>
-                        </div>
-                        <div>
-                            <fieldset role="group">
-                                <legend>Damage Dice</legend>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" checked />
-                                    d4
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" />
-                                    d6
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" />
-                                    d8
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" />
-                                    d10
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" />
-                                    d12
-                                </label>
-                                <label>
-                                    <input type="radio" name="inventory2WeaponDamageDice" />
-                                    d20
-                                </label>
-                            </fieldset>
-                        </div>
-                        <div>
-                            <label for="inventory2WeaponDamage">Damage Modifier</label>
-                            <input type="text" id="inventory2WeaponDamage" placeholder="modifier">
-                        </div>
-                        <div>
-                            <label for="inventory2WeaponFeature">Feature</label>
-                            <input type="text" id="inventory2WeaponFeature" placeholder="Feature">
-                        </div>
-                    </div>
-                </div>
 
                 <!-- ARMOR -->
-
                 <div>
                     <h2>Armor</h2>
                     <div class="grid">
                         <div>
+                            <label for="armorName">Armor Name:</label>
                             <input type="text" id="armorName" placeholder="Enter armor name">
                         </div>
                         <div>
-                            <input type="number" id="armorSlots" placeholder="Enter armorslots">
+                            <label for="armorSlots">Armor Slots:</label>
+                            <input type="number" id="armorSlots" placeholder="Enter armor slots" value="0" min="0">
                         </div>
-
                     </div>
                     <div class="grid">
                         <div>
-                            <input type="number" id="armorMajorThreshold" placeholder="Minor Thrershold">
+                            <label for="armorMajorThreshold">Major Threshold:</label>
+                            <input type="number" id="armorMajorThreshold" placeholder="Major Threshold" value="0" min="0">
                         </div>
                         <div>
-                            <input type="number" id="armorSevereThreshold" placeholder="Minor Thrershold">
+                            <label for="armorSevereThreshold">Severe Threshold:</label>
+                            <input type="number" id="armorSevereThreshold" placeholder="Severe Threshold" value="0" min="0">
                         </div>
                     </div>
                 </div>
+
                 <div>
-                    <h2>Other</h2>
-
-                    <fieldset role="group">
-                        <input type="text" id="item1" placeholder="Item name">
-                        <input type="number" id="item1Count" placeholder="1">
-                        <button class="contrast">X</button>
-                    </fieldset>
-                    <button style="width: 100%;" class="secondary">Add Item</button>
-
+                    <h2>Other Items</h2>
+                    <div id="otherItemsContainer">
+                        <!-- Dynamic item rows will be added here -->
+                    </div>
+                    <button style="width: 100%;" class="secondary" id="addItemButton">Add Item</button>
                 </div>
+            </div>
         </article>
+
         <article>
             <h1>Domain cards</h1>
-            <div class="grid">
-                <div class="card">
-                    <b>A long card name without an end in sight</b>
-                    <p>Spend a hope to gain a hope. Fun, right?</p>
-                </div>
-                <div class="card">
-                    <b>Title</b>
-                    <p>Description</p>
-                </div>
+            <div class="domain-card-container" id="domainCardsContainer">
+                <!-- Domain cards will be dynamically added here -->
             </div>
-            <div class="grid">
-                <div class="card">
-                    <b>Title</b>
-                    <p>Description</p>
-                </div>
-                <div class="card">
-                    <b>Title</b>
-                    <p>Description</p>
-                </div>
+            <div>
+                <button style="width: 100%;" class="secondary" id="addCardButton">Add domain card</button>
             </div>
-            <div class="grid">
-                <div class="card">
-                    <b>Title</b>
-                    <p>Description</p>
-                </div>
-                <div class="card">
-                    <b>Title</b>
-                    <p>Description</p>
-                </div>
-            </div>
-
         </article>
+
         <article>
-            <button style="width: 100%;" onclick="saveCharacter()">Save Character</button>
+            <button style="width: 100%;" id="saveCharacterButton">Save Character to JSON</button>
         </article>
     </main>
+
     <script>
+        // Max number of health/stress checkboxes
+        const MAX_HP_STRESS = 12;
+
+        /**
+         * Loads an image selected by the user and displays it in the preview area.
+         * Also stores the image as a Base64 string for saving/sharing.
+         * @param {Event} event The change event from the file input.
+         */
         function loadImage(event) {
             const file = event.target.files[0];
             if (!file) return;
+
             const reader = new FileReader();
             reader.onload = function (e) {
                 const img = document.getElementById('previewImage');
                 img.src = e.target.result;
                 img.style.display = 'block';
+                // Update URL hash after image is loaded
+                updateUrl();
             };
             reader.readAsDataURL(file);
         }
+
+        /**
+         * Dynamically updates the number of health checkboxes based on the max health input.
+         */
+        function healthUpdate() {
+            const maxHealthInput = document.getElementById('characterMaxHealth');
+            let maxHealth = parseInt(maxHealthInput.value, 10);
+            if (isNaN(maxHealth) || maxHealth < 1) maxHealth = 1;
+            if (maxHealth > MAX_HP_STRESS) maxHealth = MAX_HP_STRESS; // Cap at MAX_HP_STRESS
+            maxHealthInput.value = maxHealth; // Update input value if capped
+
+            const container = document.getElementById('healthCheckboxesContainer');
+            container.innerHTML = ''; // Clear existing checkboxes
+
+            for (let i = 0; i < maxHealth; i++) {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'healthCheck';
+                checkbox.checked = true; // Default to full health
+                label.appendChild(checkbox);
+                container.appendChild(label);
+            }
+            updateUrl(); // Update URL hash after health changes
+        }
+
+        /**
+         * Dynamically updates the number of stress checkboxes based on the max stress input.
+         */
+        function stressUpdate() {
+            const maxStressInput = document.getElementById('characterMaxStress');
+            let maxStress = parseInt(maxStressInput.value, 10);
+            if (isNaN(maxStress) || maxStress < 1) maxStress = 1;
+            if (maxStress > MAX_HP_STRESS) maxStress = MAX_HP_STRESS; // Cap at MAX_HP_STRESS
+            maxStressInput.value = maxStress; // Update input value if capped
+
+            const container = document.getElementById('stressCheckboxesContainer');
+            container.innerHTML = ''; // Clear existing checkboxes
+
+            for (let i = 0; i < maxStress; i++) {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'stressCheck';
+                checkbox.checked = true; // Default to no stress
+                label.appendChild(checkbox);
+                container.appendChild(label);
+            }
+            updateUrl(); // Update URL hash after stress changes
+        }
+
+        /**
+         * Adds a new domain card dynamically to the character sheet.
+         */
+        function addDomainCard(cardData = {}) {
+            const container = document.getElementById('domainCardsContainer');
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+
+            cardDiv.innerHTML = `
+                <input type="text" class="domain-card-name" placeholder="Card name" value="${cardData.name || ''}">
+                <textarea class="domain-card-description" placeholder="Spend a hope to do something funky!">${cardData.description || ''}</textarea>
+                <label>
+                    <input type="checkbox" class="domain-card-vaulted" ${cardData.vaulted ? 'checked' : ''}> Stored in vault
+                </label>
+                <button style="width: 100%;" class="contrast remove-domain-card-button">X</button>
+            `;
+
+            container.appendChild(cardDiv);
+
+            // Attach event listener to the new remove button
+            cardDiv.querySelector('.remove-domain-card-button').addEventListener('click', function() {
+                removeDomainCard(this);
+            });
+
+            // Attach event listeners to inputs for URL update
+            cardDiv.querySelector('.domain-card-name').addEventListener('input', updateUrl);
+            cardDiv.querySelector('.domain-card-description').addEventListener('input', updateUrl);
+            cardDiv.querySelector('.domain-card-vaulted').addEventListener('change', updateUrl);
+
+            updateCardVaultStatus(); // Re-evaluate vault status for all cards
+            updateUrl(); // Update URL hash
+        }
+
+        /**
+         * Removes a domain card from the character sheet.
+         * @param {HTMLElement} buttonElement The 'X' button element that was clicked.
+         */
+        function removeDomainCard(buttonElement) {
+            const cardDiv = buttonElement.closest('.card');
+            if (cardDiv) {
+                cardDiv.remove();
+                updateCardVaultStatus(); // Re-evaluate vault status for remaining cards
+                updateUrl(); // Update URL hash
+            }
+        }
+
+        /**
+         * Updates the 'vaulted' status of domain cards based on the 5 active card limit.
+         */
+        function updateCardVaultStatus() {
+            const cards = document.querySelectorAll('#domainCardsContainer .card');
+            cards.forEach((card, index) => {
+                const checkbox = card.querySelector('.domain-card-vaulted');
+                if (index < 5) {
+                    card.classList.remove('vaulted');
+                    checkbox.checked = false; // Ensure first 5 are not vaulted
+                } else {
+                    card.classList.add('vaulted');
+                    checkbox.checked = true; // Ensure subsequent cards are vaulted
+                }
+            });
+        }
+
+        /**
+         * Adds a new item row to the "Other Items" section.
+         */
+        function addItem(itemData = {}) {
+            const container = document.getElementById('otherItemsContainer');
+            const itemRow = document.createElement('fieldset');
+            itemRow.setAttribute('role', 'group');
+            itemRow.className = 'item-row';
+
+            itemRow.innerHTML = `
+                <input type="text" class="item-name" placeholder="Item name" value="${itemData.name || ''}">
+                <input type="number" class="item-count" placeholder="1" value="${itemData.count || 1}" min="1">
+                <button class="contrast remove-item-button">X</button>
+            `;
+            container.appendChild(itemRow);
+
+            // Attach event listener to the new remove button
+            itemRow.querySelector('.remove-item-button').addEventListener('click', function() {
+                removeItem(this);
+            });
+
+            // Attach event listeners to inputs for URL update
+            itemRow.querySelector('.item-name').addEventListener('input', updateUrl);
+            itemRow.querySelector('.item-count').addEventListener('input', updateUrl);
+
+            updateUrl(); // Update URL hash
+        }
+
+        /**
+         * Removes an item row from the "Other Items" section.
+         * @param {HTMLElement} buttonElement The 'X' button element that was clicked.
+         */
+        function removeItem(buttonElement) {
+            const itemRow = buttonElement.closest('.item-row');
+            if (itemRow) {
+                itemRow.remove();
+                updateUrl(); // Update URL hash
+            }
+        }
+
+        /**
+         * Collects all character data from the form and returns it as an object.
+         * @returns {Object} An object containing all character data.
+         */
+        function collectCharacterData() {
+            const characterData = {};
+
+            // Image
+            const previewImage = document.getElementById('previewImage');
+            characterData.image = previewImage.style.display === 'block' ? previewImage.src : '';
+
+            // Description
+            characterData.description = document.getElementById('characterDescription').value;
+
+            // Character Details
+            characterData.name = document.getElementById('characterName').value;
+            characterData.class = document.getElementById('characterClass').value;
+            characterData.subclass = document.getElementById('characterSubClass').value;
+            characterData.level = parseInt(document.getElementById('characterLevel').value, 10) || 1;
+
+            // Stats
+            characterData.strength = parseInt(document.getElementById('strength').value, 10) || 0;
+            characterData.agility = parseInt(document.getElementById('agility').value, 10) || 0;
+            characterData.finesse = parseInt(document.getElementById('finesse').value, 10) || 0;
+            characterData.instinct = parseInt(document.getElementById('instinct').value, 10) || 0;
+            characterData.knowledge = parseInt(document.getElementById('knowledge').value, 10) || 0;
+
+            // Health & Stress
+            characterData.maxHealth = parseInt(document.getElementById('characterMaxHealth').value, 10) || 6;
+            characterData.currentHealth = Array.from(document.querySelectorAll('#healthCheckboxesContainer input[type="checkbox"]'))
+                                            .filter(cb => cb.checked).length;
+            characterData.maxStress = parseInt(document.getElementById('characterMaxStress').value, 10) || 6;
+            characterData.currentStress = Array.from(document.querySelectorAll('#stressCheckboxesContainer input[type="checkbox"]'))
+                                            .filter(cb => cb.checked).length;
+
+            // Primary Weapon
+            characterData.primaryWeapon = {
+                name: document.getElementById('primaryWeaponName').value,
+                trait: document.getElementById('primaryWeaponTrait').value,
+                range: document.getElementById('primaryWeaponRange').value,
+                damageDice: document.querySelector('input[name="primaryWeaponDamageDice"]:checked')?.value || 'd4',
+                damageModifier: document.getElementById('primaryWeaponDamage').value,
+                feature: document.getElementById('primaryWeaponFeature').value
+            };
+
+            // Secondary Weapon
+            characterData.secondaryWeapon = {
+                name: document.getElementById('secondaryWeaponName').value,
+                trait: document.getElementById('secondaryWeaponTrait').value,
+                range: document.getElementById('secondaryWeaponRange').value,
+                damageDice: document.querySelector('input[name="secondaryWeaponDamageDice"]:checked')?.value || 'd4',
+                damageModifier: document.getElementById('secondaryWeaponDamage').value,
+                feature: document.getElementById('secondaryWeaponFeature').value
+            };
+
+            // Armor
+            characterData.armor = {
+                name: document.getElementById('armorName').value,
+                slots: parseInt(document.getElementById('armorSlots').value, 10) || 0,
+                majorThreshold: parseInt(document.getElementById('armorMajorThreshold').value, 10) || 0,
+                severeThreshold: parseInt(document.getElementById('armorSevereThreshold').value, 10) || 0
+            };
+
+            // Other Items
+            characterData.otherItems = [];
+            document.querySelectorAll('#otherItemsContainer .item-row').forEach(row => {
+                characterData.otherItems.push({
+                    name: row.querySelector('.item-name').value,
+                    count: parseInt(row.querySelector('.item-count').value, 10) || 1
+                });
+            });
+
+            // Domain Cards
+            characterData.domainCards = [];
+            document.querySelectorAll('#domainCardsContainer .card').forEach(card => {
+                characterData.domainCards.push({
+                    name: card.querySelector('.domain-card-name').value,
+                    description: card.querySelector('.domain-card-description').value,
+                    vaulted: card.querySelector('.domain-card-vaulted').checked
+                });
+            });
+
+            return characterData;
+        }
+
+        /**
+         * Populates the form fields with data from a character object.
+         * @param {Object} data The character data object.
+         */
+        function populateForm(data) {
+            // Image
+            const previewImage = document.getElementById('previewImage');
+            if (data.image) {
+                previewImage.src = data.image;
+                previewImage.style.display = 'block';
+            } else {
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+            }
+
+            // Description
+            document.getElementById('characterDescription').value = data.description || '';
+
+            // Character Details
+            document.getElementById('characterName').value = data.name || '';
+            document.getElementById('characterClass').value = data.class || '';
+            document.getElementById('characterSubClass').value = data.subclass || '';
+            document.getElementById('characterLevel').value = data.level || 1;
+
+            // Stats
+            document.getElementById('strength').value = data.strength || 0;
+            document.getElementById('agility').value = data.agility || 0;
+            document.getElementById('finesse').value = data.finesse || 0;
+            document.getElementById('instinct').value = data.instinct || 0;
+            document.getElementById('knowledge').value = data.knowledge || 0;
+
+            // Health & Stress
+            document.getElementById('characterMaxHealth').value = data.maxHealth || 6;
+            healthUpdate(); // Re-render checkboxes
+            // Set current health checkboxes
+            const healthCbs = document.querySelectorAll('#healthCheckboxesContainer input[type="checkbox"]');
+            for (let i = 0; i < healthCbs.length; i++) {
+                healthCbs[i].checked = (i < (data.currentHealth || data.maxHealth));
+            }
+
+            document.getElementById('characterMaxStress').value = data.maxStress || 6;
+            stressUpdate(); // Re-render checkboxes
+            // Set current stress checkboxes
+            const stressCbs = document.querySelectorAll('#stressCheckboxesContainer input[type="checkbox"]');
+            for (let i = 0; i < stressCbs.length; i++) {
+                stressCbs[i].checked = (i < (data.currentStress || data.maxStress));
+            }
+
+            // Primary Weapon
+            if (data.primaryWeapon) {
+                document.getElementById('primaryWeaponName').value = data.primaryWeapon.name || '';
+                document.getElementById('primaryWeaponTrait').value = data.primaryWeapon.trait || 'strength';
+                document.getElementById('primaryWeaponRange').value = data.primaryWeapon.range || 'melee';
+                const primaryDamageDice = document.querySelector(`input[name="primaryWeaponDamageDice"][value="${data.primaryWeapon.damageDice}"]`);
+                if (primaryDamageDice) primaryDamageDice.checked = true;
+                document.getElementById('primaryWeaponDamage').value = data.primaryWeapon.damageModifier || '';
+                document.getElementById('primaryWeaponFeature').value = data.primaryWeapon.feature || '';
+            }
+
+            // Secondary Weapon
+            if (data.secondaryWeapon) {
+                document.getElementById('secondaryWeaponName').value = data.secondaryWeapon.name || '';
+                document.getElementById('secondaryWeaponTrait').value = data.secondaryWeapon.trait || 'strength';
+                document.getElementById('secondaryWeaponRange').value = data.secondaryWeapon.range || 'melee';
+                const secondaryDamageDice = document.querySelector(`input[name="secondaryWeaponDamageDice"][value="${data.secondaryWeapon.damageDice}"]`);
+                if (secondaryDamageDice) secondaryDamageDice.checked = true;
+                document.getElementById('secondaryWeaponDamage').value = data.secondaryWeapon.damageModifier || '';
+                document.getElementById('secondaryWeaponFeature').value = data.secondaryWeapon.feature || '';
+            }
+
+            // Armor
+            if (data.armor) {
+                document.getElementById('armorName').value = data.armor.name || '';
+                document.getElementById('armorSlots').value = data.armor.slots || 0;
+                document.getElementById('armorMajorThreshold').value = data.armor.majorThreshold || 0;
+                document.getElementById('armorSevereThreshold').value = data.armor.severeThreshold || 0;
+            }
+
+            // Other Items
+            document.getElementById('otherItemsContainer').innerHTML = ''; // Clear existing
+            if (data.otherItems && Array.isArray(data.otherItems)) {
+                data.otherItems.forEach(item => addItem(item));
+            }
+
+            // Domain Cards
+            document.getElementById('domainCardsContainer').innerHTML = ''; // Clear existing
+            if (data.domainCards && Array.isArray(data.domainCards)) {
+                data.domainCards.forEach(card => addDomainCard(card));
+            }
+            updateCardVaultStatus(); // Ensure correct vault status after loading
+        }
+
+        /**
+         * Saves the current character data to a JSON file and triggers a download.
+         */
+        function saveCharacter() {
+            const characterData = collectCharacterData();
+            const jsonString = JSON.stringify(characterData, null, 2); // Pretty print JSON
+
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${characterData.name || 'Daggerheart_Character'}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up the URL object
+
+            console.log('Character saved as JSON.');
+        }
+
+        /**
+         * Triggers a file input to allow the user to load a character from a JSON file.
+         */
+        function loadCharacter() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json';
+            fileInput.style.display = 'none'; // Hide the input
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const loadedData = JSON.parse(e.target.result);
+                        populateForm(loadedData);
+                        updateUrl(); // Update URL after loading
+                        console.log('Character loaded from JSON.');
+                    } catch (error) {
+                        console.error('Error parsing JSON file:', error);
+                        alert('Failed to load character: Invalid JSON file.');
+                    }
+                };
+                reader.readAsText(file);
+                document.body.removeChild(fileInput); // Clean up the hidden input
+            });
+
+            document.body.appendChild(fileInput);
+            fileInput.click(); // Programmatically click the hidden input
+        }
+
+        /**
+         * Updates the URL hash with the encoded character data for sharing.
+         */
+        function updateUrl() {
+            // Prevent URL hash manipulation when running from a blob: URL due to security restrictions.
+            if (window.location.protocol === 'blob:') {
+                console.warn('URL sharing is disabled in this environment (running from a blob: URL).');
+                return;
+            }
+
+            const characterData = collectCharacterData();
+            // Remove image from URL data if it's too large, or if it's a placeholder
+            const dataToEncode = { ...characterData };
+            if (dataToEncode.image && dataToEncode.image.startsWith('data:image/')) {
+                // Check if the base64 string is excessively long for URL hash limits,
+                // or if it's a placeholder. For now, we'll include it as requested,
+                // but this is a potential issue for very large images.
+            } else {
+                dataToEncode.image = ''; // Don't include if not a base64 image
+            }
+
+            try {
+                const jsonString = JSON.stringify(dataToEncode);
+                const encodedData = encodeURIComponent(btoa(jsonString));
+                window.location.hash = encodedData;
+            } catch (error) {
+                console.error('Error encoding character data for URL:', error);
+                // If the data is too large, the URL update might fail.
+                // Consider a message to the user or omitting large fields like image.
+            }
+        }
+
+        /**
+         * Initializes the application on page load.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach event listeners
+            document.getElementById('characterImage').addEventListener('change', loadImage);
+            document.getElementById('characterMaxHealth').addEventListener('input', healthUpdate);
+            document.getElementById('characterMaxStress').addEventListener('input', stressUpdate);
+            document.getElementById('addCardButton').addEventListener('click', () => addDomainCard());
+            document.getElementById('addItemButton').addEventListener('click', () => addItem());
+            document.getElementById('saveCharacterButton').addEventListener('click', saveCharacter);
+            document.getElementById('loadCharacterButton').addEventListener('click', loadCharacter);
+
+            // Add event listeners to all form inputs to trigger URL update
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                if (element.id !== 'characterImage' && element.id !== 'loadCharacterButton' && element.id !== 'saveCharacterButton') {
+                    element.addEventListener('input', updateUrl);
+                    element.addEventListener('change', updateUrl); // For select and checkboxes/radios
+                }
+            });
+
+            // Initial setup for health/stress checkboxes
+            healthUpdate();
+            stressUpdate();
+
+            // Load character from URL hash on page load
+            if (window.location.hash) {
+                try {
+                    const encodedData = window.location.hash.substring(1); // Remove '#'
+                    const decodedJsonString = atob(decodeURIComponent(encodedData));
+                    const loadedData = JSON.parse(decodedJsonString);
+                    populateForm(loadedData);
+                    console.log('Character loaded from URL hash.');
+                } catch (error) {
+                    console.error('Error loading character from URL hash:', error);
+                    // Clear hash if it's invalid to prevent continuous errors
+                    window.location.hash = '';
+                }
+            } else {
+                // If no hash, ensure initial state is reflected in URL
+                updateUrl();
+            }
+        });
     </script>
 </body>
+</html>

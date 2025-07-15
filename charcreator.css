@@ -1,4 +1,145 @@
+/* Your custom CSS from charcreator.css */
 html {
     background: #2A7B9B;
     background: linear-gradient(140deg, rgba(42, 123, 155, 1) 0%, rgba(237, 221, 83, 1) 100%);
+}
+
+.card {
+    background: var(--pico-color-zinc-50);
+    border-radius: 10px;
+    padding: 10px;
+    /* Removed margin from here, relying on grid gap for spacing */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card.vaulted {
+    background: var(--pico-color-zinc-200);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Additional styles for better layout and responsiveness */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 960px;
+    /* Limit max width for better readability */
+    margin: 5% auto;
+    /* Center the container */
+    padding: 20px;
+}
+
+article {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: var(--pico-background-color);
+    box-shadow: var(--pico-shadow);
+}
+
+.grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    margin-bottom: 20px;
+}
+
+.grid>div {
+    display: flex;
+    flex-direction: column;
+}
+
+fieldset[role="group"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    border: 1px solid var(--pico-form-element-border-color);
+    border-radius: var(--pico-border-radius);
+}
+
+fieldset[role="group"] legend {
+    padding: 0 5px;
+    font-weight: bold;
+    color: var(--pico-color);
+}
+
+fieldset[role="group"] label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+fieldset[role="group"] input[type="checkbox"],
+fieldset[role="group"] input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+#previewImage {
+    border-radius: 8px;
+    border: 1px solid var(--pico-form-element-border-color);
+    margin-top: 10px;
+    object-fit: cover;
+    width: 200px;
+    height: 200px;
+    /* Ensure a consistent size */
+}
+
+.item-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.item-row input[type="text"] {
+    flex-grow: 1;
+}
+
+.item-row input[type="number"] {
+    width: 60px;
+    /* Smaller width for count */
+}
+
+.item-row button {
+    flex-shrink: 0;
+    width: auto;
+    min-width: unset;
+}
+
+.domain-card-container {
+    display: grid;
+    gap: 20px;
+    /* Default to single column for small screens */
+    grid-template-columns: 1fr;
+}
+
+/* Force two columns for screens wider than 768px */
+@media (min-width: 768px) {
+    .domain-card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.domain-card-container .card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.domain-card-container .card textarea {
+    min-height: 80px;
+    /* Ensure description fields are visible */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
