@@ -255,6 +255,7 @@
             <div class="domain-card-container" id="domainCardsContainer">
                 <!-- Domain cards will be dynamically added here -->
             </div>
+            <br>
             <div>
                 <button style="width: 100%;" class="secondary" id="addCardButton">Add domain card</button>
             </div>
@@ -266,9 +267,35 @@
     </main>
 
     <script>
-        // Max number of health/stress checkboxes
+        // Constants for game rules
         const MAX_HP_STRESS = 12;
         const MAX_ACTIVE_CARDS = 5; // Maximum number of active domain cards
+
+        /**
+         * Displays a custom message box instead of alert().
+         * @param {string} message The message to display.
+         */
+        function showMessageBox(message) {
+            const messageBox = document.createElement('div');
+            messageBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: var(--pico-background-color);
+                border: 1px solid var(--pico-color-red-500);
+                padding: 20px;
+                border-radius: var(--pico-border-radius);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 1000;
+                text-align: center;
+            `;
+            messageBox.innerHTML = `
+                <p>${message}</p>
+                <button onclick="this.parentElement.remove()">OK</button>
+            `;
+            document.body.appendChild(messageBox);
+        }
 
         /**
          * Loads an image selected by the user and displays it in the preview area.
@@ -284,8 +311,7 @@
                 const img = document.getElementById('previewImage');
                 img.src = e.target.result;
                 img.style.display = 'block';
-                // Update URL hash after image is loaded
-                updateUrl();
+                updateUrl(); // Update URL hash after image is loaded
             };
             reader.readAsDataURL(file);
         }
@@ -293,7 +319,7 @@
         /**
          * Dynamically updates the number of health checkboxes based on the max health input.
          */
-        function healthUpdate() {
+        function updateHealthCheckboxes() {
             const maxHealthInput = document.getElementById('characterMaxHealth');
             let maxHealth = parseInt(maxHealthInput.value, 10);
             if (isNaN(maxHealth) || maxHealth < 1) maxHealth = 1;
@@ -301,6 +327,7 @@
             maxHealthInput.value = maxHealth; // Update input value if capped
 
             const container = document.getElementById('healthCheckboxesContainer');
+            const currentCheckedCount = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).length;
             container.innerHTML = ''; // Clear existing checkboxes
 
             for (let i = 0; i < maxHealth; i++) {
@@ -308,7 +335,9 @@
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.name = 'healthCheck';
-                checkbox.checked = true; // Default to full health
+                // Preserve checked state if re-rendering, default to full health if new
+                checkbox.checked = (i < currentCheckedCount) || (currentCheckedCount === 0 && i < maxHealth);
+                checkbox.addEventListener('change', updateUrl); // Add listener for URL update
                 label.appendChild(checkbox);
                 container.appendChild(label);
             }
@@ -318,7 +347,7 @@
         /**
          * Dynamically updates the number of stress checkboxes based on the max stress input.
          */
-        function stressUpdate() {
+        function updateStressCheckboxes() {
             const maxStressInput = document.getElementById('characterMaxStress');
             let maxStress = parseInt(maxStressInput.value, 10);
             if (isNaN(maxStress) || maxStress < 1) maxStress = 1;
@@ -326,6 +355,7 @@
             maxStressInput.value = maxStress; // Update input value if capped
 
             const container = document.getElementById('stressCheckboxesContainer');
+            const currentCheckedCount = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).length;
             container.innerHTML = ''; // Clear existing checkboxes
 
             for (let i = 0; i < maxStress; i++) {
@@ -333,7 +363,9 @@
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.name = 'stressCheck';
-                checkbox.checked = true; // Default to no stress
+                // Preserve checked state if re-rendering, default to no stress if new
+                checkbox.checked = (i < currentCheckedCount) || (currentCheckedCount === 0 && i < maxStress);
+                checkbox.addEventListener('change', updateUrl); // Add listener for URL update
                 label.appendChild(checkbox);
                 container.appendChild(label);
             }
@@ -342,6 +374,7 @@
 
         /**
          * Adds a new domain card dynamically to the character sheet.
+         * @param {Object} cardData - Optional data to pre-populate the card.
          */
         function addDomainCard(cardData = {}) {
             const container = document.getElementById('domainCardsContainer');
@@ -376,19 +409,7 @@
 
             // Attach event listener to the new toggle vault button
             cardDiv.querySelector('.toggle-vault-button').addEventListener('click', function() {
-                const isVaulted = this.dataset.vaulted === 'true';
-                if (isVaulted) {
-                    // If currently vaulted, try to unvault
-                    this.dataset.vaulted = 'false';
-                    cardDiv.classList.remove('vaulted');
-                    this.textContent = 'Send to Vault';
-                } else {
-                    // If currently active, try to vault
-                    this.dataset.vaulted = 'true';
-                    cardDiv.classList.add('vaulted');
-                    this.textContent = 'Remove from Vault';
-                }
-                updateCardVaultStatus(); // Re-evaluate vault status for all cards
+                toggleDomainCardVault(this);
             });
 
             // Attach event listeners to inputs for URL update
@@ -396,7 +417,8 @@
             cardDiv.querySelector('.domain-card-description').addEventListener('input', updateUrl);
             cardDiv.querySelector('.domain-card-recall-cost').addEventListener('input', updateUrl);
             
-            updateCardVaultStatus(); // Re-evaluate vault status for all cards
+            // After adding a card, enforce the limit
+            enforceDomainCardLimit(); 
             updateUrl(); // Update URL hash
         }
 
@@ -408,54 +430,68 @@
             const cardDiv = buttonElement.closest('.card');
             if (cardDiv) {
                 cardDiv.remove();
-                updateCardVaultStatus(); // Re-evaluate vault status for remaining cards
+                enforceDomainCardLimit(); // Re-evaluate vault status for remaining cards
                 updateUrl(); // Update URL hash
             }
         }
 
         /**
-         * Updates the 'vaulted' status of domain cards based on the 5 active card limit.
-         * This function ensures that:
-         * 1. A maximum of MAX_ACTIVE_CARDS (5) are "active" (not vaulted).
-         * 2. If a player marks a card as in the vault, he can remove another card from the vault.
+         * Toggles the vaulted status of a single domain card.
+         * This function handles the direct user interaction with the vault button.
+         * @param {HTMLElement} buttonElement The 'Send to Vault'/'Remove from Vault' button.
          */
-        function updateCardVaultStatus() {
-            const allCards = Array.from(document.querySelectorAll('#domainCardsContainer .card'));
-            
-            // Separate cards into active and vaulted based on their current visual state
-            let activeCards = allCards.filter(card => !card.classList.contains('vaulted'));
-            let vaultedCards = allCards.filter(card => card.classList.contains('vaulted'));
+        function toggleDomainCardVault(buttonElement) {
+            const cardDiv = buttonElement.closest('.card');
+            if (!cardDiv) return;
 
-            // Rule 1: If there are more active cards than allowed, force vault the excess
+            const isCurrentlyVaulted = cardDiv.classList.contains('vaulted');
+
+            if (isCurrentlyVaulted) {
+                // If currently vaulted, unvault it
+                cardDiv.classList.remove('vaulted');
+                buttonElement.dataset.vaulted = 'false';
+                buttonElement.textContent = 'Send to Vault';
+            } else {
+                // If currently active, vault it
+                cardDiv.classList.add('vaulted');
+                buttonElement.dataset.vaulted = 'true';
+                buttonElement.textContent = 'Remove from Vault';
+            }
+            // After toggling, enforce the global limit
+            enforceDomainCardLimit();
+            updateUrl();
+        }
+
+        /**
+         * Enforces the maximum number of active domain cards (MAX_ACTIVE_CARDS).
+         * If more than MAX_ACTIVE_CARDS are active, it will force the excess cards into the vault.
+         * This function does NOT automatically unvault cards; unvaulting is a user action.
+         */
+        function enforceDomainCardLimit() {
+            const allCards = Array.from(document.querySelectorAll('#domainCardsContainer .card'));
+            let activeCards = allCards.filter(card => !card.classList.contains('vaulted'));
+
+            // If there are more active cards than allowed, force vault the excess
             while (activeCards.length > MAX_ACTIVE_CARDS) {
-                // Find an active card to vault. Prioritize cards that were not just unvaulted.
-                // For simplicity, we'll vault the last active card added/found.
+                // Find an active card to vault. We'll vault the last one in the list
+                // to keep the most recently user-activated cards potentially active.
                 const cardToVault = activeCards.pop(); 
                 if (cardToVault) {
                     cardToVault.classList.add('vaulted');
-                    cardToVault.querySelector('.toggle-vault-button').dataset.vaulted = 'true';
-                    cardToVault.querySelector('.toggle-vault-button').textContent = 'Remove from Vault';
-                    vaultedCards.push(cardToVault); // Move to vaulted list
+                    const toggleButton = cardToVault.querySelector('.toggle-vault-button');
+                    if (toggleButton) {
+                        toggleButton.dataset.vaulted = 'true';
+                        toggleButton.textContent = 'Remove from Vault';
+                    }
                 }
             }
-
-            // Rule 2: If there are fewer active cards than allowed, and vaulted cards exist, unvault some
-            while (activeCards.length < MAX_ACTIVE_CARDS && vaultedCards.length > 0) {
-                // Find a vaulted card to unvault. Prioritize the earliest vaulted card.
-                const cardToUnvault = vaultedCards.shift(); 
-                if (cardToUnvault) {
-                    cardToUnvault.classList.remove('vaulted');
-                    cardToUnvault.querySelector('.toggle-vault-button').dataset.vaulted = 'false';
-                    cardToUnvault.querySelector('.toggle-vault-button').textContent = 'Send to Vault';
-                    activeCards.push(cardToUnvault); // Move to active list
-                }
-            }
-            updateUrl(); // Important to call updateUrl after status changes
+            updateUrl(); // Update URL after any changes due to enforcement
         }
 
 
         /**
          * Adds a new item row to the "Other Items" section.
+         * @param {Object} itemData - Optional data to pre-populate the item.
          */
         function addItem(itemData = {}) {
             const container = document.getElementById('otherItemsContainer');
@@ -614,7 +650,7 @@
 
             // Health & Stress
             document.getElementById('characterMaxHealth').value = data.maxHealth || 6;
-            healthUpdate(); // Re-render checkboxes
+            updateHealthCheckboxes(); // Re-render checkboxes
             // Set current health checkboxes
             const healthCbs = document.querySelectorAll('#healthCheckboxesContainer input[type="checkbox"]');
             for (let i = 0; i < healthCbs.length; i++) {
@@ -622,7 +658,7 @@
             }
 
             document.getElementById('characterMaxStress').value = data.maxStress || 6;
-            stressUpdate(); // Re-render checkboxes
+            updateStressCheckboxes(); // Re-render checkboxes
             // Set current stress checkboxes
             const stressCbs = document.querySelectorAll('#stressCheckboxesContainer input[type="checkbox"]');
             for (let i = 0; i < stressCbs.length; i++) {
@@ -670,7 +706,9 @@
             if (data.domainCards && Array.isArray(data.domainCards)) {
                 data.domainCards.forEach(card => addDomainCard(card));
             }
-            // updateCardVaultStatus() is called within addDomainCard for each card, ensuring correct state
+            // Ensure the limit is enforced after all cards are added
+            enforceDomainCardLimit();
+            updateUrl(); // Update URL hash after populating
         }
 
         /**
@@ -712,30 +750,10 @@
                     try {
                         const loadedData = JSON.parse(e.target.result);
                         populateForm(loadedData);
-                        updateUrl(); // Update URL after loading
                         console.log('Character loaded from JSON.');
                     } catch (error) {
                         console.error('Error parsing JSON file:', error);
-                        // Using a custom message box instead of alert()
-                        const messageBox = document.createElement('div');
-                        messageBox.style.cssText = `
-                            position: fixed;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            background-color: var(--pico-background-color);
-                            border: 1px solid var(--pico-color-red-500);
-                            padding: 20px;
-                            border-radius: var(--pico-border-radius);
-                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                            z-index: 1000;
-                            text-align: center;
-                        `;
-                        messageBox.innerHTML = `
-                            <p>Failed to load character: Invalid JSON file.</p>
-                            <button onclick="this.parentElement.remove()">OK</button>
-                        `;
-                        document.body.appendChild(messageBox);
+                        showMessageBox('Failed to load character: Invalid JSON file.');
                     }
                 };
                 reader.readAsText(file);
@@ -760,9 +778,9 @@
             // Remove image from URL data if it's too large, or if it's a placeholder
             const dataToEncode = { ...characterData };
             if (dataToEncode.image && dataToEncode.image.startsWith('data:image/')) {
-                // Check if the base64 string is excessively long for URL hash limits,
-                // or if it's a placeholder. For now, we'll include it as requested,
-                // but this is a potential issue for very large images.
+                // For very large images, the URL hash might exceed browser limits.
+                // Consider a warning or omitting the image if it's too big.
+                // For now, we include it as requested.
             } else {
                 dataToEncode.image = ''; // Don't include if not a base64 image
             }
@@ -774,7 +792,7 @@
             } catch (error) {
                 console.error('Error encoding character data for URL:', error);
                 // If the data is too large, the URL update might fail.
-                // Consider a message to the user or omitting large fields like image.
+                showMessageBox('Character data too large for URL sharing. Image or extensive text might be the cause.');
             }
         }
 
@@ -782,17 +800,18 @@
          * Initializes the application on page load.
          */
         document.addEventListener('DOMContentLoaded', () => {
-            // Attach event listeners
+            // Attach event listeners for core functionalities
             document.getElementById('characterImage').addEventListener('change', loadImage);
-            document.getElementById('characterMaxHealth').addEventListener('input', healthUpdate);
-            document.getElementById('characterMaxStress').addEventListener('input', stressUpdate);
+            document.getElementById('characterMaxHealth').addEventListener('input', updateHealthCheckboxes);
+            document.getElementById('characterMaxStress').addEventListener('input', updateStressCheckboxes);
             document.getElementById('addCardButton').addEventListener('click', () => addDomainCard());
             document.getElementById('addItemButton').addEventListener('click', () => addItem());
             document.getElementById('saveCharacterButton').addEventListener('click', saveCharacter);
             document.getElementById('loadCharacterButton').addEventListener('click', loadCharacter);
 
-            // Add event listeners to all form inputs to trigger URL update
+            // Add event listeners to all relevant form inputs to trigger URL update
             document.querySelectorAll('input, select, textarea').forEach(element => {
+                // Exclude specific buttons and file input as they have their own handlers or don't directly update URL on input
                 if (element.id !== 'characterImage' && element.id !== 'loadCharacterButton' && element.id !== 'saveCharacterButton') {
                     element.addEventListener('input', updateUrl);
                     element.addEventListener('change', updateUrl); // For select and checkboxes/radios
@@ -800,8 +819,8 @@
             });
 
             // Initial setup for health/stress checkboxes
-            healthUpdate();
-            stressUpdate();
+            updateHealthCheckboxes();
+            updateStressCheckboxes();
 
             // Load character from URL hash on page load
             if (window.location.hash) {
@@ -813,6 +832,7 @@
                     console.log('Character loaded from URL hash.');
                 } catch (error) {
                     console.error('Error loading character from URL hash:', error);
+                    showMessageBox('Error loading character from URL hash. The URL data might be corrupted or too large.');
                     // Clear hash if it's invalid to prevent continuous errors
                     window.location.hash = '';
                 }
