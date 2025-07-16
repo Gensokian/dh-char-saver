@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="images/favicon.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+    <link rel="stylesheet" href="charcreator.css">
 
     <title>Daggerheart Character creator!</title>
 </head>
@@ -363,7 +364,14 @@
             // Attach event listeners to inputs for URL update
             cardDiv.querySelector('.domain-card-name').addEventListener('input', updateUrl);
             cardDiv.querySelector('.domain-card-description').addEventListener('input', updateUrl);
-            cardDiv.querySelector('.domain-card-vaulted').addEventListener('change', updateUrl);
+            cardDiv.querySelector('.domain-card-vaulted').addEventListener('change', function() {
+                if (this.checked) {
+                    cardDiv.classList.add('vaulted');
+                } else {
+                    cardDiv.classList.remove('vaulted');
+                }
+                updateUrl();
+            });
 
             updateCardVaultStatus(); // Re-evaluate vault status for all cards
             updateUrl(); // Update URL hash
@@ -387,18 +395,42 @@
          */
         function updateCardVaultStatus() {
             const cards = document.querySelectorAll('#domainCardsContainer .card');
-            cards.forEach((card, index) => {
+            let activeCount = 0;
+
+            // Count the number of non-vaulted cards
+            cards.forEach(card => {
                 const checkbox = card.querySelector('.domain-card-vaulted');
-                if (index < 5) {
-                    card.classList.remove('vaulted');
-                    checkbox.checked = false; // Ensure first 5 are not vaulted
-                } else {
-                    card.classList.add('vaulted');
-                    checkbox.checked = true; // Ensure subsequent cards are vaulted
+                if (!checkbox.checked) {
+                    activeCount++;
                 }
             });
-        }
 
+            // If there are more than 5 active cards, vault the extra ones
+            if (activeCount > 5) {
+                let cardsToVault = activeCount - 5;
+                for (let i = 0; i < cards.length && cardsToVault > 0; i++) {
+                    const card = cards[i];
+                    const checkbox = card.querySelector('.domain-card-vaulted');
+                    if (!checkbox.checked) {
+                        checkbox.checked = true;
+                        card.classList.add('vaulted');
+                        cardsToVault--;
+                    }
+                }
+            } else {
+                // If there are less than or equal to 5 active cards, unvault cards until we reach 5
+                let cardsToUnvault = 5 - activeCount;
+                for (let i = cards.length - 1; i >= 0 && cardsToUnvault > 0; i--) {
+                    const card = cards[i];
+                    const checkbox = card.querySelector('.domain-card-vaulted');
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                        card.classList.remove('vaulted');
+                        cardsToUnvault--;
+                    }
+                }
+            }
+        }
         /**
          * Adds a new item row to the "Other Items" section.
          */
