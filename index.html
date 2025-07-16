@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="charcreator.css">
 
     <title>Daggerheart Character creator!</title>
+    <style>
+    </style>
 </head>
 <body>
     <main class="container">
@@ -266,6 +268,7 @@
     <script>
         // Max number of health/stress checkboxes
         const MAX_HP_STRESS = 12;
+        const MAX_ACTIVE_CARDS = 5; // Maximum number of active domain cards
 
         /**
          * Loads an image selected by the user and displays it in the preview area.
@@ -342,15 +345,25 @@
          */
         function addDomainCard(cardData = {}) {
             const container = document.getElementById('domainCardsContainer');
+            
             const cardDiv = document.createElement('div');
             cardDiv.className = 'card';
+            // Set initial vaulted state based on cardData or default to false
+            if (cardData.vaulted) {
+                cardDiv.classList.add('vaulted');
+            }
 
             cardDiv.innerHTML = `
                 <input type="text" class="domain-card-name" placeholder="Card name" value="${cardData.name || ''}">
                 <textarea class="domain-card-description" placeholder="Spend a hope to do something funky!">${cardData.description || ''}</textarea>
                 <label>
-                    <input type="checkbox" class="domain-card-vaulted" ${cardData.vaulted ? 'checked' : ''}> Stored in vault
+                    Recall Cost:
+                    <input type="number" class="domain-card-recall-cost" placeholder="Recall Cost" value="${cardData.recallCost || 0}" min="0">
                 </label>
+                <button class="secondary toggle-vault-button" 
+                        data-vaulted="${cardData.vaulted ? 'true' : 'false'}">
+                    ${cardData.vaulted ? 'Remove from Vault' : 'Send to Vault'}
+                </button>
                 <button style="width: 100%;" class="contrast remove-domain-card-button">X</button>
             `;
 
@@ -361,18 +374,28 @@
                 removeDomainCard(this);
             });
 
+            // Attach event listener to the new toggle vault button
+            cardDiv.querySelector('.toggle-vault-button').addEventListener('click', function() {
+                const isVaulted = this.dataset.vaulted === 'true';
+                if (isVaulted) {
+                    // If currently vaulted, try to unvault
+                    this.dataset.vaulted = 'false';
+                    cardDiv.classList.remove('vaulted');
+                    this.textContent = 'Send to Vault';
+                } else {
+                    // If currently active, try to vault
+                    this.dataset.vaulted = 'true';
+                    cardDiv.classList.add('vaulted');
+                    this.textContent = 'Remove from Vault';
+                }
+                updateCardVaultStatus(); // Re-evaluate vault status for all cards
+            });
+
             // Attach event listeners to inputs for URL update
             cardDiv.querySelector('.domain-card-name').addEventListener('input', updateUrl);
             cardDiv.querySelector('.domain-card-description').addEventListener('input', updateUrl);
-            cardDiv.querySelector('.domain-card-vaulted').addEventListener('change', function() {
-                if (this.checked) {
-                    cardDiv.classList.add('vaulted');
-                } else {
-                    cardDiv.classList.remove('vaulted');
-                }
-                updateUrl();
-            });
-
+            cardDiv.querySelector('.domain-card-recall-cost').addEventListener('input', updateUrl);
+            
             updateCardVaultStatus(); // Re-evaluate vault status for all cards
             updateUrl(); // Update URL hash
         }
@@ -392,45 +415,45 @@
 
         /**
          * Updates the 'vaulted' status of domain cards based on the 5 active card limit.
+         * This function ensures that:
+         * 1. A maximum of MAX_ACTIVE_CARDS (5) are "active" (not vaulted).
+         * 2. If a player marks a card as in the vault, he can remove another card from the vault.
          */
         function updateCardVaultStatus() {
-            const cards = document.querySelectorAll('#domainCardsContainer .card');
-            let activeCount = 0;
+            const allCards = Array.from(document.querySelectorAll('#domainCardsContainer .card'));
+            
+            // Separate cards into active and vaulted based on their current visual state
+            let activeCards = allCards.filter(card => !card.classList.contains('vaulted'));
+            let vaultedCards = allCards.filter(card => card.classList.contains('vaulted'));
 
-            // Count the number of non-vaulted cards
-            cards.forEach(card => {
-                const checkbox = card.querySelector('.domain-card-vaulted');
-                if (!checkbox.checked) {
-                    activeCount++;
-                }
-            });
-
-            // If there are more than 5 active cards, vault the extra ones
-            if (activeCount > 5) {
-                let cardsToVault = activeCount - 5;
-                for (let i = 0; i < cards.length && cardsToVault > 0; i++) {
-                    const card = cards[i];
-                    const checkbox = card.querySelector('.domain-card-vaulted');
-                    if (!checkbox.checked) {
-                        checkbox.checked = true;
-                        card.classList.add('vaulted');
-                        cardsToVault--;
-                    }
-                }
-            } else {
-                // If there are less than or equal to 5 active cards, unvault cards until we reach 5
-                let cardsToUnvault = 5 - activeCount;
-                for (let i = cards.length - 1; i >= 0 && cardsToUnvault > 0; i--) {
-                    const card = cards[i];
-                    const checkbox = card.querySelector('.domain-card-vaulted');
-                    if (checkbox.checked) {
-                        checkbox.checked = false;
-                        card.classList.remove('vaulted');
-                        cardsToUnvault--;
-                    }
+            // Rule 1: If there are more active cards than allowed, force vault the excess
+            while (activeCards.length > MAX_ACTIVE_CARDS) {
+                // Find an active card to vault. Prioritize cards that were not just unvaulted.
+                // For simplicity, we'll vault the last active card added/found.
+                const cardToVault = activeCards.pop(); 
+                if (cardToVault) {
+                    cardToVault.classList.add('vaulted');
+                    cardToVault.querySelector('.toggle-vault-button').dataset.vaulted = 'true';
+                    cardToVault.querySelector('.toggle-vault-button').textContent = 'Remove from Vault';
+                    vaultedCards.push(cardToVault); // Move to vaulted list
                 }
             }
+
+            // Rule 2: If there are fewer active cards than allowed, and vaulted cards exist, unvault some
+            while (activeCards.length < MAX_ACTIVE_CARDS && vaultedCards.length > 0) {
+                // Find a vaulted card to unvault. Prioritize the earliest vaulted card.
+                const cardToUnvault = vaultedCards.shift(); 
+                if (cardToUnvault) {
+                    cardToUnvault.classList.remove('vaulted');
+                    cardToUnvault.querySelector('.toggle-vault-button').dataset.vaulted = 'false';
+                    cardToUnvault.querySelector('.toggle-vault-button').textContent = 'Send to Vault';
+                    activeCards.push(cardToUnvault); // Move to active list
+                }
+            }
+            updateUrl(); // Important to call updateUrl after status changes
         }
+
+
         /**
          * Adds a new item row to the "Other Items" section.
          */
@@ -549,7 +572,9 @@
                 characterData.domainCards.push({
                     name: card.querySelector('.domain-card-name').value,
                     description: card.querySelector('.domain-card-description').value,
-                    vaulted: card.querySelector('.domain-card-vaulted').checked
+                    recallCost: parseInt(card.querySelector('.domain-card-recall-cost').value, 10) || 0,
+                    // Determine vaulted status from the class on the cardDiv
+                    vaulted: card.classList.contains('vaulted')
                 });
             });
 
@@ -645,7 +670,7 @@
             if (data.domainCards && Array.isArray(data.domainCards)) {
                 data.domainCards.forEach(card => addDomainCard(card));
             }
-            updateCardVaultStatus(); // Ensure correct vault status after loading
+            // updateCardVaultStatus() is called within addDomainCard for each card, ensuring correct state
         }
 
         /**
@@ -691,7 +716,26 @@
                         console.log('Character loaded from JSON.');
                     } catch (error) {
                         console.error('Error parsing JSON file:', error);
-                        alert('Failed to load character: Invalid JSON file.');
+                        // Using a custom message box instead of alert()
+                        const messageBox = document.createElement('div');
+                        messageBox.style.cssText = `
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            background-color: var(--pico-background-color);
+                            border: 1px solid var(--pico-color-red-500);
+                            padding: 20px;
+                            border-radius: var(--pico-border-radius);
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                            z-index: 1000;
+                            text-align: center;
+                        `;
+                        messageBox.innerHTML = `
+                            <p>Failed to load character: Invalid JSON file.</p>
+                            <button onclick="this.parentElement.remove()">OK</button>
+                        `;
+                        document.body.appendChild(messageBox);
                     }
                 };
                 reader.readAsText(file);

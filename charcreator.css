@@ -143,3 +143,57 @@ fieldset[role="group"] input[type="radio"] {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Custom styles for grid layout and vaulted cards - moved from previous inline style to reflect charcreator.css usage */
+/* These styles are now largely handled by your charcreator.css and the main HTML structure */
+.card {
+    /* Existing .card styles from charcreator.css are sufficient */
+    display: flex;
+    /* Added for better internal card layout */
+    flex-direction: column;
+    /* Added for better internal card layout */
+    gap: 10px;
+    /* Added for spacing within the card */
+}
+
+.card.vaulted {
+    opacity: 0.6;
+    /* background-color is already in charcreator.css */
+}
+
+.card input[type="text"],
+.card textarea,
+.card input[type="number"] {
+    width: 100%;
+    margin-bottom: 0;
+    /* Adjusted to use gap for spacing */
+}
+
+.card label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 0;
+    /* Adjusted to use gap for spacing */
+}
+
+.card button {
+    margin-top: auto;
+    /* Pushes buttons to the bottom of the card */
+}
+
+/* Ensure domain-card-container uses grid as defined in charcreator.css */
+.domain-card-container {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+    /* Default to single column */
+}
+
+@media (min-width: 768px) {
+    .domain-card-container {
+        grid-template-columns: repeat(2, 1fr);
+        /* Two columns for wider screens */
+    }
+}
