@@ -4,31 +4,10 @@ html {
     background: linear-gradient(140deg, rgba(42, 123, 155, 1) 0%, rgba(237, 221, 83, 1) 100%);
 }
 
-.card {
-    background: var(--pico-color-zinc-50);
-    border-radius: 10px;
-    padding: 10px;
-    /* Removed margin from here, relying on grid gap for spacing */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card.vaulted {
-    background: var(--pico-color-zinc-200);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Additional styles for better layout and responsiveness */
 body {
     font-family: 'Inter', sans-serif;
 }
 
-.container {
-    max-width: 960px;
-    /* Limit max width for better readability */
-    margin: 5% auto;
-    /* Center the container */
-    padding: 20px;
-}
 
 article {
     margin-bottom: 20px;
@@ -45,7 +24,7 @@ article {
     margin-bottom: 20px;
 }
 
-.grid>div {
+.grid > div {
     display: flex;
     flex-direction: column;
 }
@@ -87,7 +66,6 @@ fieldset[role="group"] input[type="radio"] {
     object-fit: cover;
     width: 200px;
     height: 200px;
-    /* Ensure a consistent size */
 }
 
 .item-row {
@@ -103,7 +81,6 @@ fieldset[role="group"] input[type="radio"] {
 
 .item-row input[type="number"] {
     width: 60px;
-    /* Smaller width for count */
 }
 
 .item-row button {
@@ -112,18 +89,46 @@ fieldset[role="group"] input[type="radio"] {
     min-width: unset;
 }
 
+/* Card styles */
+.card {
+    background: var(--pico-color-zinc-50);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card.vaulted {
+    background: var(--pico-color-zinc-200);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0.6;
+}
+
+.card input[type="text"],
+.card textarea,
+.card input[type="number"] {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.card label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 0;
+}
+
+.card button {
+    margin-top: auto;
+}
+
+/* Domain card container grid */
 .domain-card-container {
     display: grid;
     gap: 20px;
-    /* Default to single column for small screens */
     grid-template-columns: 1fr;
-}
-
-/* Force two columns for screens wider than 768px */
-@media (min-width: 768px) {
-    .domain-card-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 .domain-card-container .card {
@@ -134,7 +139,6 @@ fieldset[role="group"] input[type="radio"] {
 
 .domain-card-container .card textarea {
     min-height: 80px;
-    /* Ensure description fields are visible */
 }
 
 /* Responsive adjustments */
@@ -144,56 +148,21 @@ fieldset[role="group"] input[type="radio"] {
     }
 }
 
-
-/* Custom styles for grid layout and vaulted cards - moved from previous inline style to reflect charcreator.css usage */
-/* These styles are now largely handled by your charcreator.css and the main HTML structure */
-.card {
-    /* Existing .card styles from charcreator.css are sufficient */
-    display: flex;
-    /* Added for better internal card layout */
-    flex-direction: column;
-    /* Added for better internal card layout */
-    gap: 10px;
-    /* Added for spacing within the card */
-}
-
-.card.vaulted {
-    opacity: 0.6;
-    /* background-color is already in charcreator.css */
-}
-
-.card input[type="text"],
-.card textarea,
-.card input[type="number"] {
-    width: 100%;
-    margin-bottom: 0;
-    /* Adjusted to use gap for spacing */
-}
-
-.card label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 0;
-    /* Adjusted to use gap for spacing */
-}
-
-.card button {
-    margin-top: auto;
-    /* Pushes buttons to the bottom of the card */
-}
-
-/* Ensure domain-card-container uses grid as defined in charcreator.css */
-.domain-card-container {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: 1fr;
-    /* Default to single column */
-}
-
 @media (min-width: 768px) {
     .domain-card-container {
         grid-template-columns: repeat(2, 1fr);
-        /* Two columns for wider screens */
     }
+}
+
+/* Toast notification */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 300px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    background-color: var(--pico-color-zinc-100);
+    padding: 15px;
 }
